@@ -76,6 +76,9 @@ Status open_files(EncodeInfo *encInfo)
 }
 
 Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo){
+    if((argc>5)||(argc<4)){
+        return e_failure;
+    }
     int s_len=strlen(argv[2]);
     if (s_len<4)
     return e_failure;
@@ -84,7 +87,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     else{
         encInfo->src_image_fname=argv[2];
     }
-    encInfo ->fptr_src_image=fopen(argv[2],"r");
+    encInfo ->fptr_src_image=fopen(argv[2],"r"); 
     if(encInfo->fptr_src_image==NULL){
         return e_failure;
     }
