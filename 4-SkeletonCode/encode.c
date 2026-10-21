@@ -75,34 +75,63 @@ Status open_files(EncodeInfo *encInfo)
 }
 
 Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo){
-    /*  ->source file(bmp)
-        check the argv[2] must be ".bmp" extn
-         if ext not .bmp  return e_failure
+    int s_len=strlen(argv[2]);
+    if (s_len<4)
+    return e_failure;
+    if((argv[2][s_len-4]!='.')||(argv[2][s_len-3]!='b')||(argv[2][s_len-2]!='m')||(argv[2][s_len-1]!='p'))
+    return e_failure;
+    else{
+        encInfo->src_image_fname=argv[2];
+    }
+    encInfo ->fptr_src_image=fopen(argv[2],"r");
+    if(encInfo->fptr_src_image==NULL){
+        return e_failure;
+    }
+    //secretfile
+    encInfo->secret_fname=argv[3];
+    encInfo->fptr_secret=fopen(argv[3],"rb");
+    if(encInfo->fptr_secret==NULL){
+        return e_failure;
+    }
 
-        check last 4 characters are .bmp
-        if yes, encinfo -> src_image_fname==argv[2]
-        open thr file in read mode argv[2]
-        encInfo -> fptr_src_image=fopen()
-        if the file is not present ->return e_failure
-         
+    //optional file
+
+    if(argc>4){
+    encInfo->stego_image_fname=argv[4];
+    int steg_len=strlen(argv[4]);
+        if(steg_len<4)
+        return e_failure;
+        if((argv[4][steg_len-4]!='.')||(argv[4][steg_len-3]!='b')||(argv[4][steg_len-2]!='m')||(argv[4][steg_len-1]!='p'))
+        return e_failure;
+    }
+    else
+    encInfo->stego_image_fname="default.bmp";
+
+     
         
-         ->secret file
-         checking argv[3] is a valid file
-         encInfo -> secret_fname=argv[3]
-          id this file is predent or not
-          If present , encInfo - >fptr_secret = fopen()
-          If not return e_failure
+        encInfo->fptr_stego_image=fopen(encInfo->stego_image_fname,"wb");
+        if(encInfo->fptr_stego_image==NULL)
+        return e_failure;
+
+    return e_success;
+
+    
 
 
-        ->optional file
-        check argv[4] is NULL 
-        If not NULL, encInfo - >stego_image_fname=argv[4];
-        IF not NULL, encInfo - >stego_image_fname="default.bmp"
 
-        check extn is only of ".bmp"
-        if not return e_failure
 
-        open the file in wr mode, and store thr file ptr to structure member.
+    
 
-    */
+
+
+
+
+
+
+
+
+
+    
+
+
 }
