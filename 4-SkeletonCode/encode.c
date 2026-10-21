@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "encode.h"
 #include "types.h"
+#include<string.h>
 
 /* Function Definitions */
 
@@ -74,7 +75,7 @@ Status open_files(EncodeInfo *encInfo)
     return e_success;
 }
 
-Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo){
+Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo){
     int s_len=strlen(argv[2]);
     if (s_len<4)
     return e_failure;

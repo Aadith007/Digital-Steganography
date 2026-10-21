@@ -9,9 +9,9 @@ int main(int argc,char *argv[])
         printf("Usage: ./a.out -e <source.bmp> <message.txt> [output.bmp]\n");
         return 1;
     }
-    OperationType op=check_operation(argv[1][1]);
+    OperationType op=check_operation_type(argv[1][1]);
     if(op==e_encode){
-        if(read_and_validate_encode_args(argv,&encInfo)==e_success)
+        if(read_and_validate_encode_args(argc,argv,&encInfo)==e_success)
         printf("Encoding arguments validation succes\n");
         else{
         printf("Encoding argument validation Failed\n");
