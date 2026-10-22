@@ -13,6 +13,7 @@ int main(int argc,char *argv[])
     if(op==e_encode){
         if(read_and_validate_encode_args(argc,argv,&encInfo)==e_success)
         printf("Encoding arguments validation succes\n");
+        //do_encoding(&encInfo)==e_success
         else{
         printf("Encoding argument validation Failed\n");
         return 1;
