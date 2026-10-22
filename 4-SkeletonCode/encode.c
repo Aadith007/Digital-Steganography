@@ -95,13 +95,20 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
 
     return e_success;
 }
-     status do_encoding(Encoding *encInfo){
+     Status do_encoding(EncodeInfo *encInfo){
         
-          check_capacity(EncInfo)==e_failure
-          print error msg,return e_failue
+          if(check_capacity(encInfo)==e_failure){
+            printf("Error: Insufficient image capacity\n");
+            return e_failure;
+          }
 
-          ->copy_bmp_header(encInfo->fptr_src_mage,encInfo->fptr_stego_mage)==e_failure
-          print error msg,return e_dfilur
+
+          if(copy_bmp_header(encInfo->fptr_src_image,encInfo->fptr_stego_image)==e_failure){
+
+            printf("Error:Failed to copy BMP header\n");
+            return e_failure;
+          }
+          
 
           ->encode_magicstring(MAGIC STRING,encInfo)==e_failure
           print error msge , return e_failure
@@ -109,13 +116,13 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
           ->char *dot=strchr(argv[3],'.')
           ->
 
-
-        */
+        }
+        
     
 
-    status check_capacity(Encoding *encInfo){
+    status check_capacity(EncodeInfo *encInfo){
         encInfo -> size_secret_file = get_file_size(encInfo->fptr_secret);
-        if(encInfo->long size_secret_file ==0){
+        if(encInfo->size_secret_file ==0){
             printf("Secret file is empty\n");
             return e_failure;
         }
@@ -125,7 +132,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
         if(encInfo->image_capacity>=required_capacity){
             return e_success;
         }
-        printf("Error: Insufficient image capacity\n");
+        
         return e_failure;
     }
 
@@ -141,29 +148,48 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     {
          return 0;
     }
+    rewind(fptr);
     return (uint)res;
 }
 
 
-    uint get_image_size_for_bmp(File *fptr_image){
+    uint get_image_size_for_bmp(FILE *fptr_image){
         uint width;
         uint height;
-        fseek(fptr_image,18,SEEK_SET);
-        fread(&width,sizeof(uint),1,fptr_image);
-        fseek(fptr_image,22,SEEK_SET);
-        fread(&height,sizeof(uint),1,fptr_image);
+        if(fseek(fptr_image,18,SEEK_SET)!=0)
+        return 0;
+        if(fread(&width,sizeof(uint),1,fptr_image)!=1)
+        return 0;
+        if(fseek(fptr_image,22,SEEK_SET)!=0)
+        return 0;
+        if(fread(&height,sizeof(uint),1,fptr_image)!=1)
+        return 0;
         return width*height*3;
 
     }
 
-    //Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image){
-    //
-      //      rewind(),src and scret file
-        //    declare buff 54 byrs vhar buff[54];
+    Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image){
+        char buff[54];
+
+        rewind(fptr_src_image);
+        rewind(fptr_dest_image);
+        if(fread(buff,1,54,fptr_src_image)!=54){
+            printf("Incomplete header file of source image");
+            return e_failure;
+        }
+
+         if(fwrite(buff,1,54,fptr_dest_image)!=54){
+            return e_failure;
+        }
+        return e_success;
+
+
+    } 
+      
 
 
 
-    //
+
 
    // Status encode_magic_string(const char *magic_string, EncodeInfo *encInfo){
 
