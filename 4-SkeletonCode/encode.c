@@ -123,12 +123,16 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             }
           strcpy(encInfo->extn_secret_file,dot);
 
-        if(encode_secret_file_extn_size(strlen(extn_secret_file),encInfo)==e_failure){
+        if(encode_secret_file_extn_size(strlen(encInfo->extn_secret_file),encInfo)==e_failure){
             printf("Error: extension length mismatch\n");
             return e_failure;
         }
-        if(encode_secret_file_extn(extn_secret_file,encInfo)==e_failure){
+        if(encode_secret_file_extn((encInfo->extn_secret_file),encInfo)==e_failure){
             printf("Error: Failed to encode secret file extension size\n");
+            return e_failure;
+        }
+        if(encode_secret_file_size(encInfo->size_secret_file,encInfo)==e_failure){
+            printf("Error: Failed to encode secret file size");
             return e_failure;
         }
 
@@ -231,14 +235,14 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
 
     Status encode_secret_file_extn_size(uint size,EncodeInfo *encinfo){
         char buff[32];
-        if(fread(buff,1,32,encInfo->fptr_src_image)!=32){
+        if(fread(buff,1,32,encinfo->fptr_src_image)!=32){
                 printf("Error: incomplete source image\n");
                 return e_failure;
             }
             if(encode_size_to_lsb(size,buff)!=e_success){
                 return e_failure;
             }
-            if(fwrite(buff,1,32,encInfo->fptr_stego_image)!=32){
+            if(fwrite(buff,1,32,encinfo->fptr_stego_image)!=32){
                 return e_failure;
             }
             return e_success;
@@ -257,8 +261,58 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
         return e_success;
 
     }
-    
-           
+
+    Status encode_secret_file_extn(const char *file_extn,EncodeInfo *encinfo){
+        char buff[8];
+        int len=strlen(file_extn);
+        for(int i=0;i<len;i++){
+            if(fread(buff,1,8,encinfo->fptr_src_image)!=8){
+                printf("Error: Failed to read source image\n");
+                return e_failure;
+            }
+            if(encode_byte_to_lsb(file_extn[i],buff)!=e_success){
+                printf("Error: Encoding file_extn failed\n");
+                return e_failure;
+            }
+            if(fwrite(buff,1,8,encinfo->fptr_stego_image)!=8){
+                printf("Error: Failed to write extension to the destination fille\n");
+                return e_failure;
+
+            }
+        }
+        return e_success;
+    }
+
+    Status encode_secret_file_size(long file_size,EncodeInfo *encInfo){
+        char buff[32];
+        if(fread(buff,1,32,encInfo->fptr_src_image)!=32){
+            printf("Error: Failed to to read source image\n");
+            return e_failure;
+        }
+        if(encode_size_to_lsb(file_size,buff)!=e_success){
+            printf("Error: Encoding the secret file size failed\n");
+            return e_failure;
+        }
+        if(fwrite(buff,1,32,encInfo->fptr_stego_image)!=32){
+            printf("Error: Failed to write secret file size to destination image\n");
+            return e_failure;
+        }
+        return e_success;
+    }
+
+    Status encode_data_to_image(char *data,int size,FILE *fptr_src_image,FILE *fptr_stego_image){
+        char buff[8];
+        for(int i=0;i<size;i++){
+            if(fread(buff,1,8,fptr_src_image)!=8){
+                printf("Error: failed to read source image\n");
+                return e_failure;
+            }
+            if(encode_byte_to_lsb(data,buff)!=e_success){
+                printf("Error: Failed to encode")
+            }
+
+        }
+    }
 
 
 
