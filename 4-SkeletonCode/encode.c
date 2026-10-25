@@ -132,9 +132,14 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             return e_failure;
         }
         if(encode_secret_file_size(encInfo->size_secret_file,encInfo)==e_failure){
-            printf("Error: Failed to encode secret file size");
+            printf("Error: Failed to encode secret file size\n");
             return e_failure;
         }
+        if(encode_secret_file_data(encInfo)!=e_success){
+            printf("Error: Failed to encode secret file data\n");
+            return e_failure;
+        }
+
 
           return e_success;
         }
@@ -300,19 +305,34 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
         return e_success;
     }
 
-    Status encode_data_to_image(char *data,int size,FILE *fptr_src_image,FILE *fptr_stego_image){
+    Status encode_secret_file_data(EncodeInfo *encInfo){
         char buff[8];
+        char data;
+        int size=encInfo->size_secret_file;
         for(int i=0;i<size;i++){
-            if(fread(buff,1,8,fptr_src_image)!=8){
+            if(fread(buff,1,8,encInfo->fptr_src_image)!=8){
                 printf("Error: failed to read source image\n");
                 return e_failure;
             }
+            if(fread(&data,1,1,encInfo->fptr_secret)!=1){
+                printf("Error: Failed to read secret file data\n");
+                return e_failure;
+            }
             if(encode_byte_to_lsb(data,buff)!=e_success){
-                printf("Error: Failed to encode")
+                printf("Error: Failed to encode data to destination image\n");
+                return e_failure;
+            }
+            if(fwrite(buff,1,8,encInfo->fptr_stego_image)!=8){
+                printf("Error: Failed to write secret data to dest image\n");
+                return e_failure;
             }
 
+
         }
+        return e_success;
     }
+    
+    
 
 
 
