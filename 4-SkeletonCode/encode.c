@@ -139,6 +139,10 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             printf("Error: Failed to encode secret file data\n");
             return e_failure;
         }
+        if(copy_remaining_img_data(encInfo->fptr_src_image,encInfo->fptr_stego_image)==e_failure){
+            printf("Error: Failed to copy remaining image data\n");
+            return e_failure;
+        }
 
 
           return e_success;
@@ -331,7 +335,22 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
         }
         return e_success;
     }
+
+Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest)
+{
+    int ch;
+    while ((ch = fgetc(fptr_src)) != EOF)
+    {
+          if (fputc(ch, fptr_dest) == EOF){
+
+            return e_failure;
+        }
     
+    }
+
+    return e_success;
+}
+
     
 
 
