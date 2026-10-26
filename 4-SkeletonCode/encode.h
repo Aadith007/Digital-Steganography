@@ -79,7 +79,6 @@ Status encode_secret_file_extn(const char*file_extn, EncodeInfo *encInfo);
 Status encode_secret_file_data(EncodeInfo *encInfo);
 
 /* Encode function, which does the real encoding */
-Status encode_data_to_image(char *data, int size, FILE *fptr_src_image, FILE *fptr_stego_image);
 
 /* Encode a byte into LSB of image data array */
 Status encode_byte_to_lsb(char data, char *image_buffer);

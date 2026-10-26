@@ -6,6 +6,7 @@
 
 /* Function Definitions */
 
+
 /* Get image size
  * Input: Image file ptr
  * Output: width * height * bytes per pixel (3 in our case)

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 
     if (argc < 2 || argv[1][0] != '-' || argv[1][2] != '\0')
     {
-        printf("i/p format should be : ./test_encode -e <source.bmp> <message.txt> [output.bmp]\n");
+        printf("Incorrect input format\n");
         return 1;
     }
 
