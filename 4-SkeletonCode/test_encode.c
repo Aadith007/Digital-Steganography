@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "encode.h"
 #include "types.h"
+#include "decode.h"
 
     
 int main(int argc, char *argv[])
 {
     EncodeInfo encInfo;
+    DecodeInfo decInfo;
 
     if (argc < 2 || argv[1][0] != '-' || argv[1][2] != '\0')
     {
@@ -35,6 +37,26 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
+    else if(op == e_decode){
+        if (read_and_validate_decode_args(argc, argv, &decInfo) == e_success)
+        {
+            printf("Decoding arguments validation success\n");
+
+            if (do_decoding(&decInfo) == e_failure)
+            {
+                printf("Decoding failed\n");
+                return 1;
+            }
+
+            printf("Decoding completed successfully\n");
+        }
+        else
+        {
+            printf("Decoding argument validation failed\n");
+            return 1;
+        }
+    }
+    
     else{
     
         printf("Unsupported operation\n");
@@ -42,8 +64,8 @@ int main(int argc, char *argv[])
     }
 
     return 0;
-}
 
+}
 OperationType check_operation_type(char opt){
     if(opt=='e')
     return e_encode;

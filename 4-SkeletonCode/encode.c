@@ -128,10 +128,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             printf("Error: extension length mismatch\n");
             return e_failure;
         }
-        if(encode_secret_file_extn((encInfo->extn_secret_file),encInfo)==e_failure){
-            printf("Error: Failed to encode secret file extension size\n");
-            return e_failure;
-        }
+        
         if(encode_secret_file_size(encInfo->size_secret_file,encInfo)==e_failure){
             printf("Error: Failed to encode secret file size\n");
             return e_failure;

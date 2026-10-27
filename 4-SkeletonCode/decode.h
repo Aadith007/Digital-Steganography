@@ -28,7 +28,9 @@ typedef struct _DecodeInfo
 
 Status read_and_validate_decode_args(int argc, char *argv[],DecodeInfo *decInfo);
 Status do_decoding(DecodeInfo *decInfo);
-Status decode_magic_string(const char *magic_string, EncodeInfo *encInfo);
+Status decode_magic_string(const char *magic_string, DecodeInfo *decInfo);
+Status decode_secret_file_extn_size(uint *size,DecodeInfo *decInfo);
+char decode_byte_from_lsb(char *image_buffer);
 
 
 #endif

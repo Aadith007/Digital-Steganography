@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<string.h>
 #include "decode.h"
-#include<common.h>
+#include "common.h"
 
 Status read_and_validate_decode_args(int argc,char *argv[],DecodeInfo *decInfo){
     if((argc<3) ||(argc>4)){
@@ -43,4 +43,66 @@ if((argv[2][len-4]!='.')||(argv[2][len-3]!='b')||(argv[2][len-2]!='m')||(argv[2]
     }
     return e_success;
 }
+Status do_decoding(DecodeInfo *decInfo){
+    if(decode_magic_string(MAGIC_STRING,decInfo)==e_failure){
+        printf("Error: Failed to decode magic string\n");
+        return e_failure;
+    }
+    uint extn_size;
+    if(decode_secret_file_extn_size(&extn_size,decInfo)==e_failure){
+        printf("Error: Failed to decode secret file extn size\n");
+        return e_failure;
+    }
+    if(decode_secret_file_extn(extn_size,decInfo)==e_failure){
+        printf("Error: Failed to decode secret file extn\n");
+        return e_failure;
+    }
+   
+    return e_success;
+}
 
+
+
+
+Status decode_magic_string(const char *magic_string,DecodeInfo *decInfo){
+    char buff[8];
+    int len=strlen(MAGIC_STRING);
+    fseek(decInfo->fptr_stego_image, 54, SEEK_SET);
+
+    for(int i=0;i<len;i++){
+        if(fread(buff,1,8,decInfo->fptr_stego_image)!=8){
+            return e_failure;
+        }
+        if(decode_byte_from_lsb(buff)!=magic_string[i]){
+            return e_failure;
+        }
+       
+
+    }
+     return e_success;
+           
+}
+
+char decode_byte_from_lsb(char *image_buffer){
+    char data=0;
+    for(int i=0;i<8;i++){
+        data=(data<<1)|(image_buffer[i]&1);
+    }
+    return data;
+}
+Status decode_secret_file_extn_size(uint *size,DecodeInfo *decInfo){
+    char buff[32];
+    if(fread(buff,1,32,decInfo->fptr_stego_image)!=32){
+        printf("Error: incomlete output image\n");
+        return e_failure;
+    }
+    uint data=0;
+    for(int i=0;i<32;i++){
+        data=(data<<1)|(buff[i]&1);
+
+    }
+    *size=data;
+    return e_success;
+
+}
+Status decode
