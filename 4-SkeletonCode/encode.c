@@ -17,6 +17,7 @@ uint get_image_size_for_bmp(FILE *fptr_image)
 {
     uint width, height;
     // Seek to 18th byte
+    
     fseek(fptr_image, 18, SEEK_SET);
 
     // Read the width (an int)
@@ -250,6 +251,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
                 return e_failure;
             }
             if(fwrite(buff,1,32,encinfo->fptr_stego_image)!=32){
+                printf("Error: Failed write to destination image\n");
                 return e_failure;
             }
             return e_success;
