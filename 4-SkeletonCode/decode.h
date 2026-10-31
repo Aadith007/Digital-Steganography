@@ -41,4 +41,7 @@ char decode_byte_from_lsb(char *image_buffer);
 
 Status decode_secret_file_extn(uint size, DecodeInfo *decInfo);
 
+Status decode_secret_data_size(DecodeInfo *decInfo);
+
+Status decode_secret_file_data(DecodeInfo *decInfo);
 #endif

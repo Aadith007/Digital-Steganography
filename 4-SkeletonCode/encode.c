@@ -130,10 +130,17 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             return e_failure;
         }
         
+        
+        if(encode_secret_file_extn(encInfo->extn_secret_file, encInfo)==e_failure){
+            printf("Error: Failed to encode secret file extn\n");
+            return e_failure;
+        }
+
         if(encode_secret_file_size(encInfo->size_secret_file,encInfo)==e_failure){
             printf("Error: Failed to encode secret file size\n");
             return e_failure;
         }
+        
         if(encode_secret_file_data(encInfo)!=e_success){
             printf("Error: Failed to encode secret file data\n");
             return e_failure;
@@ -274,6 +281,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     Status encode_secret_file_extn(const char *file_extn,EncodeInfo *encinfo){
         char buff[8];
         int len=strlen(file_extn);
+    
         for(int i=0;i<len;i++){
             if(fread(buff,1,8,encinfo->fptr_src_image)!=8){
                 printf("Error: Failed to read source image\n");
