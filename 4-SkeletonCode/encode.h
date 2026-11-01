@@ -47,7 +47,6 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
 Status do_encoding(EncodeInfo *encInfo);
 
 
-
 /* check capacity */
 Status check_capacity(EncodeInfo *encInfo);
 

@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     if (argc < 2 || argv[1][0] != '-' || argv[1][2] != '\0')
     {
-        printf("Incorrect input format\n");
+        printf("Incorrect command line format\n");
         return 1;
     }
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     {
         if (read_and_validate_encode_args(argc, argv, &encInfo) == e_success)
         {
-            printf("Encoding arguments validation success\n");
+           
 
             if (do_encoding(&encInfo) == e_failure){
             
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("Encoding completed successfully\n");
+            
         }
         else{
         
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     else if(op == e_decode){
         if (read_and_validate_decode_args(argc, argv, &decInfo) == e_success)
         {
-            printf("Decoding arguments validation success\n");
+            
 
             if (do_decoding(&decInfo) == e_failure)
             {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("Decoding completed successfully\n");
+            
         }
         else
         {

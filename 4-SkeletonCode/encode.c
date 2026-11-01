@@ -22,11 +22,11 @@ uint get_image_size_for_bmp(FILE *fptr_image)
 
     // Read the width (an int)
     fread(&width, sizeof(int), 1, fptr_image);
-    printf("width = %u\n", width);
+    
 
     // Read the height (an int)
     fread(&height, sizeof(int), 1, fptr_image);
-    printf("height = %u\n", height);
+    printf("INFO: Image dimensions: %u x %u\n", width, height);
 
     // Return image capacity
     return width * height * 3;
@@ -52,7 +52,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     return e_failure;
     }
     if((argv[2][s_len-4]!='.')||(argv[2][s_len-3]!='b')||(argv[2][s_len-2]!='m')||(argv[2][s_len-1]!='p')){
-        printf("Extension error in source file\n");
+        printf("Error: Extension mismatch\n");
     return e_failure;
     }
     else{
@@ -60,14 +60,14 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     }
     encInfo ->fptr_src_image=fopen(argv[2],"r"); 
     if(encInfo->fptr_src_image==NULL){
-        printf("Source file not present\n");
+        printf("Error: Source File Does not Exist\n");
         return e_failure;
     }
     //secretfile
     encInfo->secret_fname=argv[3];
     encInfo->fptr_secret=fopen(argv[3],"r");
     if(encInfo->fptr_secret==NULL){
-        printf("Secret file not present\n");
+        printf("Error: Secret File Does not Exist\n");
         return e_failure;
     }
 
@@ -77,11 +77,11 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     encInfo->stego_image_fname=argv[4];
     int steg_len=strlen(argv[4]);
         if(steg_len<4){
-        printf("Invalid destination file\n");
+        printf("Error: Invalid Destination File Name\n");
         return e_failure;
         }
         if((argv[4][steg_len-4]!='.')||(argv[4][steg_len-3]!='b')||(argv[4][steg_len-2]!='m')||(argv[4][steg_len-1]!='p')){
-             printf("Extension error in destination file\n");
+             printf("Error: Extension Mismatch in the Destination File\n");
             return e_failure;
         }
     }
@@ -92,23 +92,34 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
         
         encInfo->fptr_stego_image=fopen(encInfo->stego_image_fname,"wb");
         if(encInfo->fptr_stego_image==NULL){
-            printf("Destination file not present\n");
+            printf("Error: Unable to create destination stego image file\n");
         return e_failure;
         }
+
+        printf("\n---------IMAGE STEGANOGRAPHY---------\n");
+        printf("INFO: Encoding operation selected\n");
+        printf("INFO: Source image : %s\n",encInfo->src_image_fname);
+        printf("INFO: Secret file  : %s\n",encInfo->secret_fname);
+        printf("INFO: Destination image: %s\n",encInfo->stego_image_fname);
+        printf("INFO: Encoding argument validation successful\n");
+        printf("\n");
+
+
+
 
     return e_success;
 }
      Status do_encoding(EncodeInfo *encInfo){
         
         if(check_capacity(encInfo)==e_failure){
-            printf("Error: Insufficient image capacity\n");
+            printf("Error: Insufficient source image capacity\n");
             return e_failure;
           }
 
 
         if(copy_bmp_header(encInfo->fptr_src_image,encInfo->fptr_stego_image)==e_failure){
 
-            printf("Error:Failed to copy BMP header\n");
+            printf("Error:Failed to copy BMP header from source image\n");
             return e_failure;
           }
           
@@ -120,13 +131,13 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             }
           char *dot=strchr(encInfo->secret_fname,'.');
         if(dot==NULL){
-            printf("Error:File extn not found\n");
+            printf("Error:File extension not found\n");
             return e_failure;
             }
           strcpy(encInfo->extn_secret_file,dot);
 
         if(encode_secret_file_extn_size(strlen(encInfo->extn_secret_file),encInfo)==e_failure){
-            printf("Error: extension length mismatch\n");
+            printf("Error: Failed to encode secret file extension size into the stego image\n");
             return e_failure;
         }
         
@@ -149,6 +160,11 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             printf("Error: Failed to copy remaining image data\n");
             return e_failure;
         }
+
+        printf("\n=========================================\n");
+        printf("Encoding completed successfully\n");
+        printf("INFO: Stego image generated: %s\n", encInfo->stego_image_fname);
+        printf("=========================================\n");
 
 
           return e_success;
@@ -227,6 +243,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             }
 
         }
+        printf("INFO: Magic string encoded\n");
         return e_success;
     }
 
@@ -251,7 +268,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
     Status encode_secret_file_extn_size(uint size,EncodeInfo *encinfo){
         char buff[32];
         if(fread(buff,1,32,encinfo->fptr_src_image)!=32){
-                printf("Error: incomplete source image\n");
+                printf("Error: Incomplete source image\n");
                 return e_failure;
             }
             if(encode_size_to_lsb(size,buff)!=e_success){
@@ -261,6 +278,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
                 printf("Error: Failed write to destination image\n");
                 return e_failure;
             }
+            printf("INFO: Extn size encoded\n");
             return e_success;
         }
 
@@ -297,6 +315,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
 
             }
         }
+        printf("INFO: Secret file extn encoded\n");
         return e_success;
     }
 
@@ -314,6 +333,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
             printf("Error: Failed to write secret file size to destination image\n");
             return e_failure;
         }
+        printf("INFO: Secret file size encoded\n");
         return e_success;
     }
 
@@ -341,6 +361,7 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
 
 
         }
+        printf("INFO: Secret file data encoded\n");
         return e_success;
     }
 
@@ -355,6 +376,7 @@ Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest)
         }
     
     }
+    printf("INFO: Remaining image data copied\n");
 
     return e_success;
 }
